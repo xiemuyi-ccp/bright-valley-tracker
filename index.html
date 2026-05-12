@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>叉哥持仓跟踪</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div>
+          <p class="eyebrow">Bright Valley Capital 13F Monitor</p>
+          <h1>叉哥持仓跟踪</h1>
+          <p class="subhead">观察一家价值投资榜样机构的买入、卖出、集中度和研究线索。</p>
+        </div>
+        <div class="header-meta">
+          <span id="latest-quarter">-</span>
+          <span id="last-built">-</span>
+          <a href="https://13f.info/manager/0001965546-bright-valley-capital-ltd" target="_blank" rel="noreferrer">13f.info</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary-band" aria-label="组合概览">
+        <div class="metric">
+          <span class="metric-label">最新组合规模</span>
+          <strong id="metric-aum">-</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">最新持仓数</span>
+          <strong id="metric-count">-</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Top 5 集中度</span>
+          <strong id="metric-top5">-</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">期权敞口占比</span>
+          <strong id="metric-options">-</strong>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="页面导航">
+        <button class="tab is-active" data-tab="timeline">五年演进</button>
+        <button class="tab" data-tab="latest">最新持仓</button>
+        <button class="tab" data-tab="changes">变动榜</button>
+        <button class="tab" data-tab="method">数据口径</button>
+      </nav>
+
+      <section id="timeline" class="tab-panel is-active">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Portfolio Map</p>
+            <h2>持仓演进长图</h2>
+          </div>
+          <div class="controls">
+            <label>
+              指标
+              <select id="metric-select">
+                <option value="weight">组合占比</option>
+                <option value="value">投资金额</option>
+                <option value="ownership">占公司股本</option>
+              </select>
+            </label>
+            <button id="download-svg" class="soft-button">导出 SVG</button>
+          </div>
+        </div>
+        <div class="notice" id="coverage-note"></div>
+        <div class="drag-shell" id="timeline-shell" aria-label="可横向拖动的持仓时间轴">
+          <div id="timeline-svg"></div>
+        </div>
+      </section>
+
+      <section id="latest" class="tab-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Latest Filing</p>
+            <h2>最新持仓细节</h2>
+          </div>
+          <div class="controls">
+            <input id="latest-search" type="search" placeholder="搜索标的或公司" />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>标的</th>
+                <th>公司 / 工具</th>
+                <th>类型</th>
+                <th>投资金额</th>
+                <th>组合占比</th>
+                <th>股份数</th>
+                <th>占公司股本</th>
+                <th>较上季</th>
+                <th>动作</th>
+              </tr>
+            </thead>
+            <tbody id="latest-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="changes" class="tab-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Research Leads</p>
+            <h2>本期行为线索</h2>
+          </div>
+        </div>
+        <div class="change-grid">
+          <section>
+            <h3>新增 / 重建</h3>
+            <ol id="new-list"></ol>
+          </section>
+          <section>
+            <h3>明显加仓</h3>
+            <ol id="increase-list"></ol>
+          </section>
+          <section>
+            <h3>明显减仓</h3>
+            <ol id="decrease-list"></ol>
+          </section>
+          <section>
+            <h3>退出</h3>
+            <ol id="exit-list"></ol>
+          </section>
+        </div>
+      </section>
+
+      <section id="method" class="tab-panel">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Method</p>
+            <h2>数据口径与更新</h2>
+          </div>
+        </div>
+        <div class="method-grid">
+          <article>
+            <h3>数据源</h3>
+            <p>持仓来自 Bright Valley Capital Ltd 的 SEC 13F 报告，并用 13f.info 的结构化接口整理。13F 的金额单位是披露日组合市值，不能等同于基金完整 AUM。</p>
+          </article>
+          <article>
+            <h3>股本占比</h3>
+            <p>“占公司股本”使用当前市值除以前收盘价推算的 ADS/普通股等价基数；部分退市、ETF 或无可靠市场数据的标的显示为 N/A。期权仓位显示为名义敞口。</p>
+          </article>
+          <article>
+            <h3>历史覆盖</h3>
+            <p id="history-copy"></p>
+          </article>
+          <article>
+            <h3>更新节奏</h3>
+            <p>项目内置更新脚本，设计为每周五北京时间中午检查一次。因为 13F 是季度披露，所以每周更新通常是在等待新的 filing 出现。</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <div id="tooltip" role="tooltip"></div>
+
+    <script src="./assets/portfolio-data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
