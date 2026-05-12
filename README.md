@@ -28,4 +28,6 @@ python3 -m http.server 4173
 ./scripts/update-data.sh
 ```
 
-脚本会刷新本地 13F JSON，并重新生成 `assets/portfolio-data.js`。
+脚本会先刷新 Bright Valley Capital 的 13f.info manager 页面，自动发现最近五年窗口内的 filing，再下载对应 13F JSON，并重新生成 `assets/portfolio-data.js`。
+
+截至 2026-05-12，数据源中最新 filing 仍为 2025 Q4；2026 Q1 filing 尚未出现在 13f.info/SEC 数据集中。页面会把这个状态展示为“待披露”。

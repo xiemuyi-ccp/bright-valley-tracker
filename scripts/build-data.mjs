@@ -6,7 +6,7 @@ const root = path.resolve(fileURLToPath(import.meta.url), "../..");
 const dataDir = path.join(root, "data");
 const assetsDir = path.join(root, "assets");
 
-const filings = [
+const fallbackFilings = [
   { quarter: "2023 Q4", asOf: "2023-12-31", filingDate: "2024-02-14", id: "000196554224000002", totalValueK: 125837, reportedHoldings: 9 },
   { quarter: "2024 Q1", asOf: "2024-03-31", filingDate: "2024-05-16", id: "000196554624000002", totalValueK: 67537, reportedHoldings: 10 },
   { quarter: "2024 Q2", asOf: "2024-06-30", filingDate: "2024-08-26", id: "000196554624000004", totalValueK: 88652, reportedHoldings: 11 },
@@ -17,6 +17,16 @@ const filings = [
   { quarter: "2025 Q3", asOf: "2025-09-30", filingDate: "2025-11-13", id: "000196554625000007", totalValueK: 168879, reportedHoldings: 13 },
   { quarter: "2025 Q4", asOf: "2025-12-31", filingDate: "2026-02-12", id: "000196554626000002", totalValueK: 269159, reportedHoldings: 15 }
 ];
+
+function loadFilings() {
+  const parsed = path.join(dataDir, "filings.json");
+  if (fs.existsSync(parsed)) {
+    return JSON.parse(fs.readFileSync(parsed, "utf8"));
+  }
+  return fallbackFilings;
+}
+
+const filings = loadFilings();
 
 const aliasBySymbol = {
   "0A2I.IL": "HTHT",
@@ -232,6 +242,18 @@ const latestTop5Weight = latestSorted.slice(0, 5).reduce((sum, position) => sum 
 const latestDirectWeight = latest.positions.filter((position) => !position.optionType).reduce((sum, position) => sum + position.weightPct, 0);
 const latestOptionWeight = latest.positions.filter((position) => position.optionType).reduce((sum, position) => sum + position.weightPct, 0);
 
+function nextQuarterLabel(asOf) {
+  const date = new Date(`${asOf}T00:00:00Z`);
+  const month = date.getUTCMonth();
+  const quarter = Math.floor(month / 3) + 1;
+  const nextQuarter = quarter === 4 ? 1 : quarter + 1;
+  const year = date.getUTCFullYear() + (quarter === 4 ? 1 : 0);
+  return `${year} Q${nextQuarter}`;
+}
+
+const pendingQuarter = nextQuarterLabel(latest.asOf);
+const pendingNote = `${pendingQuarter} filing has not appeared in the SEC/13f.info dataset used by this site yet. Latest available filing remains ${latest.quarter}, filed ${latest.filingDate}.`;
+
 const appData = {
   generatedAt: new Date().toISOString(),
   manager: {
@@ -246,6 +268,8 @@ const appData = {
     requestedWindow: "Five-year tracking window",
     availableFrom: quarters[0].quarter,
     availableTo: latest.quarter,
+    pendingQuarter,
+    pendingNote,
     note: "13f.info/SEC currently expose Bright Valley Capital filings from 2023 Q4 onward in the local dataset."
   },
   assumptions: {

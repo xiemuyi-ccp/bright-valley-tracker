@@ -3,14 +3,12 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-curl -L -s -o data/000196554626000002.json https://13f.info/data/13f/000196554626000002
-curl -L -s -o data/000196554625000007.json https://13f.info/data/13f/000196554625000007
-curl -L -s -o data/000196554625000004.json https://13f.info/data/13f/000196554625000004
-curl -L -s -o data/000196554625000003.json https://13f.info/data/13f/000196554625000003
-curl -L -s -o data/000184929925000001.json https://13f.info/data/13f/000184929925000001
-curl -L -s -o data/000196554624000005.json https://13f.info/data/13f/000196554624000005
-curl -L -s -o data/000196554624000004.json https://13f.info/data/13f/000196554624000004
-curl -L -s -o data/000196554624000002.json https://13f.info/data/13f/000196554624000002
-curl -L -s -o data/000196554224000002.json https://13f.info/data/13f/000196554224000002
+curl -L -s -o data/manager.html https://13f.info/manager/0001965546-bright-valley-capital-ltd
+node scripts/parse-manager.mjs
+
+node -e 'const fs=require("fs"); for (const filing of JSON.parse(fs.readFileSync("data/filings.json","utf8"))) console.log(filing.id)' |
+while read -r filing_id; do
+  curl -L -s -o "data/${filing_id}.json" "https://13f.info/data/13f/${filing_id}"
+done
 
 node scripts/build-data.mjs

@@ -43,8 +43,9 @@ function setupSummary() {
   document.getElementById("metric-top5").textContent = pct(data.summary.latestTop5Weight);
   document.getElementById("metric-options").textContent = pct(data.summary.latestOptionWeight);
   document.getElementById("coverage-note").textContent =
-    `${data.coverage.requestedWindow}；当前可用披露覆盖 ${data.coverage.availableFrom} 到 ${data.coverage.availableTo}，共 ${data.summary.quarterCount} 个季度。`;
+    `${data.coverage.requestedWindow}；当前可用披露覆盖 ${data.coverage.availableFrom} 到 ${data.coverage.availableTo}，共 ${data.summary.quarterCount} 个季度。${data.coverage.pendingQuarter} 尚未披露，当前最新仍为 ${data.summary.latestQuarter}。`;
   document.getElementById("history-copy").textContent = data.coverage.note;
+  document.getElementById("pending-copy").textContent = data.coverage.pendingNote;
 }
 
 function setupTabs() {
